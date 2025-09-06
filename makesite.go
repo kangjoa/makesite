@@ -86,6 +86,12 @@ func processSingleFile(fileName string) {
 	
 }
 
+const (
+	Reset = "\033[0m"
+	Green = "\033[32m"
+	Bold  = "\033[1m"
+)
+
 func processDirectory(dirName string) {
 	// Find all .txt files in the directory
 	files, err := os.ReadDir(dirName)
@@ -93,13 +99,15 @@ func processDirectory(dirName string) {
 		panic(err)
 	}
 
-		// Print found .txt files to stdout
-		fmt.Println("\n=== Found .txt files: ===")
-		for _, file := range files {
-			if strings.HasSuffix(file.Name(), ".txt") {
-				fmt.Println(file.Name())
-			}
+	// Print found .txt files to stdout
+	fmt.Println("\n=== Found .txt files: ===")
+	txtFileCount := 0
+	for _, file := range files {
+		if strings.HasSuffix(file.Name(), ".txt") {
+			fmt.Println(file.Name())
+			txtFileCount++
 		}
+	}
 
 	// Process each file
 	for _, file := range files {
@@ -107,4 +115,6 @@ func processDirectory(dirName string) {
 			processSingleFile(filepath.Join(dirName, file.Name()))
 		}
 	}
+	
+	fmt.Println(Green + Bold + "Success!" + Reset + " Generated " + Bold + fmt.Sprintf("%d", txtFileCount) + Reset + " pages.")
 }
