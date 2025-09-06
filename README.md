@@ -1,6 +1,6 @@
 # 🔗 makesite
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/YOUR_USERNAME/YOUR_REPONAME)](https://goreportcard.com/report/github.com/YOUR_USERNAME/YOUR_REPONAME)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kangjoa/makesite)](https://goreportcard.com/report/github.com/kangjoa/makesite)
 
 _Create your own custom Static Site Generator (like [Jekyll](https://jekyllrb.com/) or [Hugo](https://gohugo.io/)) by cloning and completing this project!_
 
@@ -49,12 +49,12 @@ If you get stuck on any step, be sure to print the output to `stdout`!
 
 #### v1.0 Requirements
 
-- [ ] Edit line `4` of `README.md`. Change this line to the following, replacing `YOUR_USERNAME` and `YOUR_REPONAME` with your GitHub username and repository name respectively.
-- [ ] Read in the contents of the provided `first-post.txt` file.
-- [ ] Edit the provided HTML template (`template.tmpl`) to display the contents of `first-post.txt`.
-- [ ] Render the contents of `first-post.txt` using Go Templates and print it to stdout.
-- [ ] Write the HTML template to the filesystem to a file. Name it `first-post.html`.
-- [ ] Manually test the generated HTML page by running `./makesite`. Double-click the `first-post.html` file that appears in your directory after running the command to open the generated page in your browser.
+- [x] Edit line `4` of `README.md`. Change this line to the following, replacing `YOUR_USERNAME` and `YOUR_REPONAME` with your GitHub username and repository name respectively.
+- [x] Read in the contents of the provided `first-post.txt` file.
+- [x] Edit the provided HTML template (`template.tmpl`) to display the contents of `first-post.txt`.
+- [x] Render the contents of `first-post.txt` using Go Templates and print it to stdout.
+- [x] Write the HTML template to the filesystem to a file. Name it `first-post.html`.
+- [x] Manually test the generated HTML page by running `./makesite`. Double-click the `first-post.html` file that appears in your directory after running the command to open the generated page in your browser.
 - [ ] **Add, commit, and push to GitHub**.
 - [ ] Add a new flag to your command named `file`. This flag represents the name of any `.txt` file in the same directory as your program. Run `./makesite --file=latest-post.txt` to test.
 - [ ] Update the `save` function to use the input filename to generate a new HTML file. For example, if the input file is named `latest-post.txt`, the generated HTML file should be named `latest-post.html`.
@@ -89,9 +89,9 @@ If you get stuck on any step, be sure to print the output to `stdout`!
 
 - [ ] Initialize Go modules in your project.
 - [ ] Add any third party library to your project to enhance it's functionality. Some ideas you might consider include **_(CHOOSE ONLY ONE)_**:
-    - [ ] Translating page content using Google Translate.
-    - [ ] Parse Markdown (`.md`) files and transform them into HTML. `#` through `######` should translate to `<h1>` through `<h6>` elements.
-    - [ ] **_FILL IN THE BLANK_**: `I will use the __________________________________ library. The documentation is located at __________________________________. My goal is to use it to __________________________________.`
+  - [ ] Translating page content using Google Translate.
+  - [ ] Parse Markdown (`.md`) files and transform them into HTML. `#` through `######` should translate to `<h1>` through `<h6>` elements.
+  - [ ] **_FILL IN THE BLANK_**: `I will use the __________________________________ library. The documentation is located at __________________________________. My goal is to use it to __________________________________.`
 - [ ] **Add, commit, and push to GitHub**.
 
 ## Resources
