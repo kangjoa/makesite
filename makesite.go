@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"os"
+	"strings"
 )
 
 // Page holds all the information we need to generate a new
@@ -16,17 +18,24 @@ type Page struct {
 }
 
 func main() {
+	// Parse command line flags
+	fileName := flag.String("file", "first-post.txt", "the path to the text file to read")
+	flag.Parse()
+
 	// Read the contents of first-post.txt
-	fileContents, err := os.ReadFile("first-post.txt")
+	fileContents, err := os.ReadFile(*fileName)
 	if err != nil {
 		panic(err)
 	}
 
+		// Generate HTML filename by replacing .txt with .html
+		htmlFileName := strings.Replace(*fileName, ".txt", ".html", 1)
+	
 	// Create a Page struct with the content
 	page := Page{
-		TextFilePath: "first-post.txt",
-		TextFileName: "first-post",
-		HTMLPagePath: "first-post.html",
+		TextFilePath: *fileName,
+		TextFileName: *fileName,
+		HTMLPagePath: htmlFileName,
 		Content:      string(fileContents),
 	}
 
@@ -41,7 +50,7 @@ func main() {
 	}
 
 	// Create a new HTML file
-	newFile, err := os.Create("first-post.html")
+	newFile, err := os.Create(htmlFileName)
 	if err != nil {
 		panic(err)
 	}
@@ -53,5 +62,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("\n=== HTML written to first-post.html ===")
+	fmt.Println("\n=== HTML written to first-post.html ===", htmlFileName)
 }
