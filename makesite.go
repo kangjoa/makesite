@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/renderer/html"
 )
 
 // Page holds all the information we need to generate a new
@@ -17,6 +21,7 @@ type Page struct {
 	HTMLPagePath string
 	Content      string
 	Title        string
+	IsMarkdown   bool
 }
 
 func main() {
@@ -43,24 +48,49 @@ func processSingleFile(fileName string) {
 		panic(err)
 	}
 
-		// Extract first line for title
-		lines := strings.Split(string(fileContents), "\n")
-		title := strings.TrimSpace(lines[0])  // First line, trimmed of whitespace
+	// Extract first line for title
+	lines := strings.Split(string(fileContents), "\n")
+	firstLine := strings.TrimSpace(lines[0])
 
-		// Generate HTML filename by replacing .txt with .html
-		htmlFileName := strings.Replace(fileName, ".txt", ".html", 1)
-	
+	// Remove Markdown header syntax
+	title := strings.TrimLeft(firstLine, "# ")
+	// Remove trailing punctuation
+	title = strings.TrimRight(title, ".,!?;:")
+
+	// Generate HTML filename by replacing .txt or .md with .html
+	var baseName string
+	if strings.HasSuffix(fileName, ".md") {
+		baseName = strings.Replace(fileName, ".md", ".html", 1)
+	} else {
+		baseName = strings.Replace(fileName, ".txt", ".html", 1)
+	}
+
+	// Process content based on file type
+	var processedContent string
+	if strings.HasSuffix(fileName, ".md") {
+		// Parse Markdown to HTML
+		processedContent = parseMarkdown(string(fileContents))
+	} else {
+		processedContent = string(fileContents)
+	}
+
 	// Create a Page struct with the content
 	page := Page{
 		TextFilePath: fileName,
 		TextFileName: fileName,
-		HTMLPagePath: htmlFileName,
-		Content:      string(fileContents),
+		HTMLPagePath: baseName,
+		Content:      processedContent,
 		Title:        title,
+		IsMarkdown:   strings.HasSuffix(fileName, ".md"),
 	}
 
 	// Create a new template in memory named "template.tmpl"
-	t := template.Must(template.New("template.tmpl").ParseFiles("template.tmpl"))
+	t := template.Must(template.New("template.tmpl").Funcs(template.FuncMap{
+		// Allow html tags to be rendered
+		"html": func(value interface{}) template.HTML {
+			return template.HTML(fmt.Sprintf("%v", value))
+		},
+	}).ParseFiles("template.tmpl"))
 
 	// Print the rendered template to stdout
 	fmt.Println("=== Rendered HTML ===")
@@ -70,7 +100,7 @@ func processSingleFile(fileName string) {
 	}
 
 	// Create a new HTML file
-	newFile, err := os.Create(htmlFileName)
+	newFile, err := os.Create(baseName)
 	if err != nil {
 		panic(err)
 	}
@@ -82,8 +112,22 @@ func processSingleFile(fileName string) {
 		panic(err)
 	}
 
-	fmt.Println("\n=== HTML written to first-post.html ===", htmlFileName)
-	
+	fmt.Println("\n=== HTML written to first-post.html ===", baseName)
+
+}
+
+func parseMarkdown(content string) string {
+	md := goldmark.New(
+		goldmark.WithRendererOptions(
+			html.WithUnsafe(),
+		),
+	)
+
+	var buf bytes.Buffer
+	if err := md.Convert([]byte(content), &buf); err != nil {
+		panic(err)
+	}
+	return buf.String()
 }
 
 const (
@@ -100,21 +144,21 @@ func processDirectory(dirName string) {
 	}
 
 	// Print found .txt files to stdout
-	fmt.Println("\n=== Found .txt files: ===")
-	txtFileCount := 0
+	fmt.Println("\n=== Found .txt and .md files: ===")
+	fileCount := 0
 	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".txt") {
+		if strings.HasSuffix(file.Name(), ".txt") || strings.HasSuffix(file.Name(), ".md") {
 			fmt.Println(file.Name())
-			txtFileCount++
+			fileCount++
 		}
 	}
 
 	// Process each file
 	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".txt") {
+		if strings.HasSuffix(file.Name(), ".txt") || strings.HasSuffix(file.Name(), ".md") {
 			processSingleFile(filepath.Join(dirName, file.Name()))
 		}
 	}
-	
-	fmt.Println(Green + Bold + "Success!" + Reset + " Generated " + Bold + fmt.Sprintf("%d", txtFileCount) + Reset + " pages.")
+
+	fmt.Println(Green + Bold + "Success!" + Reset + " Generated " + Bold + fmt.Sprintf("%d", fileCount) + Reset + " pages.")
 }
